@@ -36,6 +36,30 @@ class Transaction:
         print("Transaction rolled back")
 
 def normalize_string(text: str) -> str:
+import hashlib
+import os
+import base64
+
+def hash_password(password: str, *, salt: bytes | None = None) -> str:
+    """Hash a password with PBKDF2-HMAC-SHA256.
+    Returns a string containing salt and hash encoded in base64, separated by '$'."""
+    if salt is None:
+        salt = os.urandom(16)
+    dk = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100_000)
+    return f"{base64.b64encode(salt).decode('utf-8')}${base64.b64encode(dk).decode('utf-8')}"
+
+def verify_password(password: str, hashed: str) -> bool:
+    """Verify a password against the stored hash.
+    The stored format is 'salt$hash' as produced by ``hash_password``."""
+    try:
+        salt_b64, hash_b64 = hashed.split('$')
+        salt = base64.b64decode(salt_b64)
+        expected_hash = base64.b64decode(hash_b64)
+    except Exception:
+        return False
+    dk = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100_000)
+    return hashlib.compare_digest(dk, expected_hash)
+
     """
     Normalize a string by removing diacritics, punctuation, and extra whitespace.
     Returns a lower‑cased, clean version of the input.
@@ -84,6 +108,13 @@ class Container:
         return self._providers[key]()
 
 if __name__ == "__main__":
+    # Demonstrate password hashing and verification
+    pwd = "s3cr3t"
+    stored = hash_password(pwd)
+    print(f"Stored hash: {stored}")
+    print("Verification (correct):", verify_password(pwd, stored))
+    print("Verification (incorrect):", verify_password("wrong", stored))
+
     print("Hello, World!")
     # Set up the DI container
     container = Container()
