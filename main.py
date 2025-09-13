@@ -38,7 +38,7 @@ class Transaction:
 def normalize_string(text: str) -> str:
 import hashlib
 import os
-import base64
+import base64\nimport sqlite3
 
 def hash_password(password: str, *, salt: bytes | None = None) -> str:
     """Hash a password with PBKDF2-HMAC-SHA256.
@@ -48,7 +48,7 @@ def hash_password(password: str, *, salt: bytes | None = None) -> str:
     dk = hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100_000)
     return f"{base64.b64encode(salt).decode('utf-8')}${base64.b64encode(dk).decode('utf-8')}"
 
-def verify_password(password: str, hashed: str) -> bool:
+def verify_password(password: str, hashed: str) -> bool:\n\ndef check_db_health(db_path: str) -> bool:\n    \"\"\"Simple health check for a SQLite database.\n\n    Returns True if a connection can be opened and a simple query succeeds.\n    \"\"\"\n    try:\n        conn = sqlite3.connect(db_path)\n        cur = conn.cursor()\n        cur.execute(\"SELECT 1\")\n        conn.close()\n        return True\n    except Exception:\n        return False
     """Verify a password against the stored hash.
     The stored format is 'salt$hash' as produced by ``hash_password``."""
     try:
