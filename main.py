@@ -125,3 +125,11 @@ if __name__ == "__main__":
         print("Doing some work inside a transaction managed by DI container")
     # Example usage of normalize_string
     print(normalize_string("Café, déjà vu!"))
+    # Run pending database migrations
+    from migrations import MigrationManager
+    mgr = MigrationManager()
+    def initial_migration():
+        print("Applying initial migration: creating tables (demo)")
+    mgr.add(1, initial_migration)
+    mgr.apply()
+
