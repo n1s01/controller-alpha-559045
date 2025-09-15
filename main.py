@@ -3,7 +3,7 @@
 import unicodedata
 import re
 import string
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict\n\nclass AppError(Exception):\n    """Base class for application-specific errors."""\n    pass\n\nclass DatabaseError(AppError):\n    """Raised for database related errors."""\n    pass\n\nclass ValidationError(AppError):\n    """Raised when input validation fails."""\n    pass\n
 
 class Transaction:
     """Simple transaction context manager placeholder.
