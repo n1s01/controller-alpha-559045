@@ -3,7 +3,18 @@
 import unicodedata
 import re
 import string
-from typing import Any, Callable, Dict\n\nclass AppError(Exception):\n    """Base class for application-specific errors."""\n    pass\n\nclass DatabaseError(AppError):\n    """Raised for database related errors."""\n    pass\n\nclass ValidationError(AppError):\n    """Raised when input validation fails."""\n    pass\n
+from typing import Any, Callable, Dict
+def merge_dicts(a: dict, b: dict, deep: bool = False) -> dict:
+    """Merge two dictionaries. If deep=True, merge nested dictionaries recursively.
+    Returns a new dictionary leaving the originals untouched.
+    """
+    result = a.copy()
+    for key, value in b.items():
+        if deep and key in result and isinstance(result[key], dict) and isinstance(value, dict):
+            result[key] = merge_dicts(result[key], value, deep=True)
+        else:
+            result[key] = value
+    return result\n\nclass AppError(Exception):\n    """Base class for application-specific errors."""\n    pass\n\nclass DatabaseError(AppError):\n    """Raised for database related errors."""\n    pass\n\nclass ValidationError(AppError):\n    """Raised when input validation fails."""\n    pass\n
 
 class Transaction:
     """Simple transaction context manager placeholder.
