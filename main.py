@@ -5,6 +5,22 @@ import re
 import string
 from typing import Any, Callable, Dict
 def merge_dicts(a: dict, b: dict, deep: bool = False) -> dict:
+def encrypt_text(plaintext: str, key: bytes) -> str:
+    """Encrypt *plaintext* with a simple XOR cipher using *key*.
+    Returns a base64‑encoded string.
+    Note: This is for demonstration only and not suitable for real security purposes.
+    """
+    data = plaintext.encode('utf-8')
+    encrypted = bytes(b ^ key[i % len(key)] for i, b in enumerate(data))
+    return base64.b64encode(encrypted).decode('utf-8')
+
+def decrypt_text(ciphertext: str, key: bytes) -> str:
+    """Decrypt a base64‑encoded *ciphertext* produced by :func:`encrypt_text`.
+    Returns the original plaintext string.
+    """
+    encrypted = base64.b64decode(ciphertext.encode('utf-8'))
+    decrypted = bytes(b ^ key[i % len(key)] for i, b in enumerate(encrypted))
+    return decrypted.decode('utf-8')
     """Merge two dictionaries. If deep=True, merge nested dictionaries recursively.
     Returns a new dictionary leaving the originals untouched.
     """
