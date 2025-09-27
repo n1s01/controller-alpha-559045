@@ -4,6 +4,11 @@ import unicodedata
 import re
 import string
 from typing import Any, Callable, Dict
+import base64
+import os
+import gzip
+import zipfile
+
 def timed(func):
     """Decorator to measure execution time of a function."""
     import time, functools
@@ -27,6 +32,50 @@ def encrypt_text(plaintext: str, key: bytes) -> str:
     return base64.b64encode(encrypted).decode('utf-8')
 
 def decrypt_text(ciphertext: str, key: bytes) -> str:
+def compress_file(source_path: str, dest_path: str, method: str = "gzip") -> None:
+    """Compress *source_path* to *dest_path*.
+    Supported *method* values:
+    - "gzip": GZIP compression (resulting file usually ends with .gz)
+    - "zip": ZIP archive containing a single file (resulting file ends with .zip)
+    """
+    if method == "gzip":
+        with open(source_path, "rb") as f_in, gzip.open(dest_path, "wb") as f_out:
+            f_out.writelines(f_in)
+    elif method == "zip":
+        with zipfile.ZipFile(dest_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+            zipf.write(source_path, arcname=os.path.basename(source_path))
+    else:
+        raise ValueError(f"Unsupported compression method: {method}")
+
+def decompress_file(source_path: str, dest_path: str, method: str = None) -> None:
+    """Decompress *source_path* to *dest_path*.
+    If *method* is None, the function infers the format from the file extension.
+    Supports gzip (".gz") and zip (".zip").
+    """
+    if method is None:
+        if source_path.endswith('.gz'):
+            method = "gzip"
+        elif source_path.endswith('.zip'):
+            method = "zip"
+        else:
+            raise ValueError("Unable to infer compression method from file extension; please specify 'method'.")
+    if method == "gzip":
+        with gzip.open(source_path, "rb") as f_in, open(dest_path, "wb") as f_out:
+            f_out.writelines(f_in)
+    elif method == "zip":
+        with zipfile.ZipFile(source_path, "r") as zipf:
+            # Assume archive contains a single file; extract it to dest_path
+            name_list = zipf.namelist()
+            if not name_list:
+                raise FileNotFoundError("ZIP archive is empty.")
+            # Extract the first entry to a temporary location, then rename
+            temp_dir = os.path.dirname(dest_path)
+            zipf.extract(name_list[0], path=temp_dir)
+            extracted_path = os.path.join(temp_dir, name_list[0])
+            os.replace(extracted_path, dest_path)
+    else:
+        raise ValueError(f"Unsupported decompression method: {method}")
+
     """Decrypt a base64‑encoded *ciphertext* produced by :func:`encrypt_text`.
     Returns the original plaintext string.
     """
