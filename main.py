@@ -48,6 +48,29 @@ def compress_file(source_path: str, dest_path: str, method: str = "gzip") -> Non
         raise ValueError(f"Unsupported compression method: {method}")
 
 def decompress_file(source_path: str, dest_path: str, method: str = None) -> None:
+def read_file(path: str, mode: str = "r", encoding: str = "utf-8") -> str:
+    """Read the entire contents of *path* using a context manager.
+    The default mode is text read ("r"). For binary data use mode="rb".
+    Returns the file content as a string (or bytes when opened in binary mode)."""
+    if "b" in mode:
+        with open(path, mode) as f:
+            return f.read()
+    else:
+        with open(path, mode, encoding=encoding) as f:
+            return f.read()
+
+def write_file(path: str, data, mode: str = "w", encoding: str = "utf-8") -> None:
+    """Write *data* to *path* using a context manager.
+    The default mode is text write ("w"). For binary data use mode="wb".
+    ``data`` should be a string for text mode or bytes for binary mode.
+    """
+    if "b" in mode:
+        with open(path, mode) as f:
+            f.write(data)
+    else:
+        with open(path, mode, encoding=encoding) as f:
+            f.write(data)
+
     """Decompress *source_path* to *dest_path*.
     If *method* is None, the function infers the format from the file extension.
     Supports gzip (".gz") and zip (".zip").
