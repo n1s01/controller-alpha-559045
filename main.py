@@ -4,6 +4,18 @@ import unicodedata
 import re
 import string
 from typing import Any, Callable, Dict
+def timed(func):
+    """Decorator to measure execution time of a function."""
+    import time, functools
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(f"{func.__name__} executed in {end - start:.6f}s")
+        return result
+    return wrapper
+
 def merge_dicts(a: dict, b: dict, deep: bool = False) -> dict:
 def encrypt_text(plaintext: str, key: bytes) -> str:
     """Encrypt *plaintext* with a simple XOR cipher using *key*.
