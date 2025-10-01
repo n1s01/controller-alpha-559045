@@ -210,6 +210,14 @@ class Container:
             self._providers[key] = provider
 
     def resolve(self, key: Any) -> Any:
+    def clear(self) -> None:
+        """Remove all registered providers and cached singletons."""
+        self._providers.clear()
+        self._singletons.clear()
+
+    def list_providers(self) -> list:
+        """Return a list of registered provider keys."""
+        return list(self._providers.keys())
         """Return an instance for *key* using the registered provider.
 
         Raises ``KeyError`` if no provider has been registered.
