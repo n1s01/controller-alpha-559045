@@ -8,6 +8,27 @@ import base64
 import os
 import gzip
 import zipfile
+# ANSI color codes for terminal output
+_COLOR_RESET = "\u001b[0m"
+_COLOR_GREEN = "\u001b[32m"
+_COLOR_RED = "\u001b[31m"
+_COLOR_YELLOW = "\u001b[33m"
+_COLOR_BLUE = "\u001b[34m"
+
+def _colorize(text: str, color_code: str) -> str:
+    return f"{color_code}{text}{_COLOR_RESET}"
+
+def print_success(message: str) -> None:
+    print(_colorize(message, _COLOR_GREEN))
+
+def print_error(message: str) -> None:
+    print(_colorize(message, _COLOR_RED))
+
+def print_info(message: str) -> None:
+    print(_colorize(message, _COLOR_BLUE))
+
+def print_warning(message: str) -> None:
+    print(_colorize(message, _COLOR_YELLOW))
 import json
 
 def timed(func):
