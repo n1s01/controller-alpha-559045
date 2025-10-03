@@ -8,6 +8,7 @@ import base64
 import os
 import gzip
 import zipfile
+import json
 
 def timed(func):
     """Decorator to measure execution time of a function."""
@@ -60,6 +61,19 @@ def read_file(path: str, mode: str = "r", encoding: str = "utf-8") -> str:
             return f.read()
 
 def write_file(path: str, data, mode: str = "w", encoding: str = "utf-8") -> None:
+def serialize_to_json(data: Any, path: str, *, ensure_ascii: bool = False, indent: int = 2) -> None:
+    """Serialize *data* to a JSON file at *path*.
+    Uses UTF‑8 encoding and optional pretty‑printing.
+    """
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=ensure_ascii, indent=indent)
+
+def deserialize_from_json(path: str) -> Any:
+    """Read JSON data from *path* and return the corresponding Python object.
+    Assumes UTF‑8 encoding.
+    """
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
     """Write *data* to *path* using a context manager.
     The default mode is text write ("w"). For binary data use mode="wb".
     ``data`` should be a string for text mode or bytes for binary mode.
